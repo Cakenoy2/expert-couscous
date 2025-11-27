@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Embed Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:#0f172a;
+      color:#e2e8f0;
+      min-height:100vh;
+      padding:20px;
+    }
+    .container{max-width:1200px;margin:0 auto;}
+    header{
+      padding:20px;
+      background:#1e293b;
+      border-radius:8px;
+      margin-bottom:20px;
+      border-left:4px solid:#2563eb;
+    }
+    h1{font-size:22px;margin-bottom:6px;}
+    .sub{font-size:13px;color:#94a3b8;}
+    .search-box{margin:18px 0;display:flex;gap:10px;}
+    input{
+      flex:1;
+      padding:12px;
+      background:#1e293b;
+      border:1px solid:#334155;
+      border-radius:6px;
+      color:#e2e8f0;
+      font-size:14px;
+    }
+    input:focus{
+      outline:none;
+      border-color:#2563eb;
+      box-shadow:0 0 0 2px rgba(37,99,235,.4);
+    }
+    button{
+      padding:12px 24px;
+      background:#2563eb;
+      color:#fff;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:500;
+    }
+    button:hover{background:#1d4ed8;}
+    .video-container{
+      background:#020617;
+      border-radius:8px;
+      overflow:hidden;
+      border:1px solid:#334155;
+      aspect-ratio:16/9;
+    }
+    iframe{
+      width:100%;
+      height:100%;
+      border:none;
+    }
+    .error{
+      background:#7f1d1d;
+      color:#fecaca;
+      padding:12px;
+      border-radius:6px;
+      margin-top:12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎬 YouTube Viewer</h1>
+      <div class="sub">วางลิงก์ YouTube แล้วกดปุ่มเพื่อดูวิดีโอ</div>
+    </header>
+
+    <div class="search-box">
+      <input id="urlInput" type="text" 
+             placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ หรือ https://youtu.be/dQw4w9WgXcQ">
+      <button onclick="loadVideo()">เล่นวิดีโอ</button>
+    </div>
+
+    <div id="errorMsg" class="error" style="display:none;"></div>
+
+    <div class="video-container">
+      <iframe id="videoFrame" 
+              src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    function getYouTubeVideoId(url) {
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\?\s]{11})/,
+        /youtube\.com\/shorts\/([^&\?\s]{11})/
+      ];
+      
+      for (let pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+      return null;
+    }
+
+    function loadVideo() {
+      const input = document.getElementById('urlInput');
+      const iframe = document.getElementById('videoFrame');
+      const errorMsg = document.getElementById('errorMsg');
+      const url = input.value.trim();
+      
+      errorMsg.style.display = 'none';
+      
+      if (!url) {
+        errorMsg.textContent = 'กรุณาใส่ลิงก์ YouTube';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      const videoId = getYouTubeVideoId(url);
+      
+      if (!videoId) {
+        errorMsg.textContent = 'ลิงก์ไม่ถูกต้อง กรุณาใส่ลิงก์ YouTube ที่ถูกต้อง';
+        errorMsg.style.display = 'block';
+        return;
+      }
+      
+      iframe.src = 'https://www.youtube.com/embed/' + videoId;
+    }
+    
+    document.getElementById('urlInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        loadVideo();
+      }
+    });
+  </script>
+</body>
+</html>
